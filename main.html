@@ -330,6 +330,18 @@
       .fc-daygrid-day {
         min-height: 35px !important;
       }
+      
+      /* Hide "Booked" text on mobile only */
+      .fc-event {
+        font-size: 0 !important;
+      }
+      
+      .fc-event::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
     }
     
     @media (max-width: 480px) {
@@ -355,7 +367,7 @@
       
       /* Very small mobile event styling */
       .fc-event {
-        font-size: 0.6rem !important;
+        font-size: 0 !important;
         padding: 1px !important;
         min-height: 16px;
       }
