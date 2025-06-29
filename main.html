@@ -275,10 +275,6 @@
       white-space: nowrap;
       overflow: hidden;
     }
-    .fc-event.booked-event {
-    color: white !important;
-    }
-    
     
     .fc-event:hover {
       opacity: 0.8;
@@ -346,6 +342,10 @@
         min-height: 10px;
         height: auto !important;
       }
+      /* Make "Booked" text invisible by matching the background color */
+      .fc-event[style*="--red-booked"] {
+      color: var(--red-booked) !important;
+      }
       
       .fc-daygrid-day {
         min-height: 18px !important;
@@ -373,7 +373,11 @@
         font-size: 0.7rem !important;
       }
       
-      /* Keep prices visible on mobile */
+      /* Hide only "Booked" text on mobile, keep prices visible */
+      .fc-event[style*="--red-booked"] {
+        font-size: 0 !important;
+      }
+      
       .fc-event[style*="--green-available"] {
         font-size: 0.6rem !important;
       }
@@ -842,18 +846,18 @@
               
               if (date === todayStr) {
                 if (!isTodayAvailableForBooking() || isBooked) {
-                  eventTitle = ' ';
+                  eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `${rateData[date]?.price || 150}`;
+                  eventTitle = `$${rateData[date]?.price || 150}`;
                   backgroundColor = 'var(--green-available)';
                 }
               } else if (date === tomorrowStr) {
                 if (isBooked) {
-                  eventTitle = ' ';
+                  eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `${rateData[date]?.price || 150}`;
+                  eventTitle = `$${rateData[date]?.price || 150}`;
                   backgroundColor = 'var(--green-available)';
                 }
               } else if (d < today) {
@@ -862,10 +866,10 @@
                 textColor = '#777';
               } else {
                 if (isBooked) {
-                  eventTitle = ' ';
+                  eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `${rateData[date]?.price || 0}`;
+                  eventTitle = `$${rateData[date]?.price || 0}`;
                   backgroundColor = 'var(--green-available)';
                 }
               }
