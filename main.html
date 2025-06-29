@@ -33,18 +33,22 @@
       background-color: var(--cream-bg);
       color: var(--peach-text);
       overflow: hidden;
+      margin: 0;
+      padding: 0;
     }
     
     .app-container {
       display: flex;
       flex-direction: column;
-      height: 80vh;
+      min-height: calc(100vh - 180px);
+      max-height: calc(100vh - 180px);
       background-color: transparent;
       overflow: hidden;
+      margin: 20px 20px 40px 20px;
     }
     
     .title-section {
-      padding: 15px 20px 10px 20px;
+      padding: 15px 0 10px 0;
       text-align: center;
       background-color: transparent;
     }
@@ -59,7 +63,7 @@
     .main-content {
       flex: 1;
       display: flex;
-      padding: 0 20px 0 20px;
+      padding: 0;
       gap: 20px;
       min-height: 0;
       overflow: hidden;
@@ -257,10 +261,32 @@
     }
     
     @media (max-width: 768px) {
+      /* Allow scrolling on mobile only */
+      html, body {
+        overflow: visible;
+        height: auto;
+      }
+      
+      .app-container {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+        padding: 5px 10px 20px 10px;
+      }
+      
+      .title-section {
+        padding: 5px 0 5px 0; /* Much smaller top margin on mobile */
+      }
+      
+      .title-section h1 {
+        font-size: 1.3rem; /* Smaller title on mobile */
+      }
+      
       .main-content {
         flex-direction: column;
         padding: 10px;
         gap: 15px;
+        overflow: visible;
       }
       
       .sidebar-section {
@@ -276,10 +302,6 @@
         padding: 15px;
       }
       
-      .title-section h1 {
-        font-size: 1.5rem;
-      }
-      
       .legend {
         gap: 10px;
       }
@@ -290,6 +312,14 @@
     }
     
     @media (max-width: 480px) {
+      .title-section {
+        padding: 3px 0 3px 0; /* Even smaller top margin on very small screens */
+      }
+      
+      .title-section h1 {
+        font-size: 1.1rem; /* Even smaller on very small screens */
+      }
+      
       .main-content {
         padding: 5px;
       }
@@ -657,6 +687,7 @@
             right: 'dayGridMonth'
           },
           height: '100%',
+          fixedWeekCount: false,
           events: [],
           dateClick: function(info) {
             try {
