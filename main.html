@@ -32,6 +32,7 @@
       font-family: 'Poppins', sans-serif;
       background-color: var(--cream-bg);
       color: var(--peach-text);
+      overflow: hidden;
     }
     
     .app-container {
@@ -39,6 +40,7 @@
       flex-direction: column;
       height: 80vh;
       background-color: transparent;
+      overflow: hidden;
     }
     
     .title-section {
@@ -60,10 +62,7 @@
       padding: 0 20px 0 20px;
       gap: 20px;
       min-height: 0;
-    }
-    
-    .bottom-buffer {
-      height: 20px;
+      overflow: hidden;
     }
     
     .calendar-section {
@@ -180,6 +179,21 @@
     
     #checkout-button:not(:disabled):hover {
       background-color: var(--green-accent);
+    }
+    
+    #retry-button {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: var(--peach-primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: none;
+    }
+    
+    #retry-button:hover {
+      background-color: var(--peach-secondary);
     }
     
     .fc-theme-standard .fc-scrollgrid {
@@ -324,12 +338,10 @@
           </div>
           <p id="total-price" class="loading">Loading calendar data...</p>
           <button id="checkout-button" disabled aria-label="Book selected dates">Book Now</button>
-          <button id="retry-button" style="display: none; margin-top: 10px; padding: 10px; background-color: var(--peach-primary); color: white; border: none; border-radius: 8px; cursor: pointer;" aria-label="Retry loading calendar">Retry Loading</button>
+          <button id="retry-button" aria-label="Retry loading calendar">Retry Loading</button>
         </div>
       </div>
     </div>
-    
-    <div class="bottom-buffer"></div>
   </div>
 
   <script>
@@ -622,7 +634,7 @@
         }
         
         const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Denver" }));
-        today.setHours(0, 0, 0, 0); // Normalize to midnight MDT
+        today.setHours(0, 0, 0, 0);
         const todayStr = today.toISOString().split('T')[0];
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -637,7 +649,7 @@
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
-          initialDate: todayStr, // Load current month (June 26, 2025)
+          initialDate: todayStr,
           validRange: { start: '2025-03-01', end: oneYear },
           headerToolbar: {
             left: 'prev,next today',
@@ -752,7 +764,6 @@
         calendar.addEventSource(generateEvents());
         calendar.render();
         
-        // Force re-render after 100ms to ensure events are clickable
         setTimeout(() => {
           calendar.getEvents().forEach(event => event.remove());
           calendar.addEventSource(generateEvents());
@@ -785,18 +796,36 @@
               throw new Error('Missing booking data');
             }
 
-            console.log('Redirecting with:', { total, checkin, checkout });
+            // Validate data format
+            total = parseFloat(total);
+            if (isNaN(total) || total <= 0) {
+              throw new Error('Invalid total amount');
+            }
+
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(checkin) || !/^\d{4}-\d{2}-\d{2}$/.test(checkout)) {
+              throw new Error('Invalid date format');
+            }
+
+            console.log('Redirecting with validated data:', { total, checkin, checkout });
 
             // Store in localStorage as fallback
             localStorage.setItem('checkin', checkin);
             localStorage.setItem('checkout', checkout);
-            localStorage.setItem('total', total);
+            localStorage.setItem('total', total.toString());
 
-            // Redirect to the checkout page with query parameters
-            window.location.href = `https://justpeacheyrentals.com/checkout?booking_total=${total}&check_in=${checkin}&check_out=${checkout}`;
+            // Create URL with proper encoding
+            const checkoutUrl = new URL('https://justpeacheyrentals.com/checkout');
+            checkoutUrl.searchParams.set('booking_total', total.toString());
+            checkoutUrl.searchParams.set('check_in', checkin);
+            checkoutUrl.searchParams.set('check_out', checkout);
+
+            console.log('Final URL:', checkoutUrl.toString());
+
+            // Redirect to the checkout page
+            window.location.href = checkoutUrl.toString();
           } catch (error) {
             console.error('Error handling checkout:', error);
-            document.getElementById('total-price').innerHTML = 'Error processing checkout. Please try again. Check console for details.';
+            document.getElementById('total-price').innerHTML = `Error: ${error.message}. Please try again.`;
             document.getElementById('checkout-button').disabled = true;
           }
         });
