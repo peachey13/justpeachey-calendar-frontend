@@ -342,12 +342,21 @@
         min-height: 10px;
         height: auto !important;
       }
-      /* Make "Booked" text invisible by matching the background color */
-      .fc-event[style*="--red-booked"] {
-      color: var(--red-booked) !important;
-      min-height: 18px !important;
-      height: 18px !important;
-      }
+       .fc-event {
+        font-size: 0.65rem !important;
+        padding: 1px 2px !important;
+        min-height: 10px;
+        height: auto !important;
+        }
+
+.fc-event:has(span), .fc-event:has(div) {
+  line-height: 1 !important;
+}
+
+.fc-event.booked-event {
+  color: var(--red-booked) !important;
+}
+
       
       .fc-daygrid-day {
         min-height: 18px !important;
