@@ -54,7 +54,7 @@
     }
     
     .title-section h1 {
-      color: var(--peach-dark);
+      color: #bc8176;
       font-weight: 600;
       font-size: clamp(1.5rem, 4vw, 2.2rem);
       margin: 0;
@@ -188,7 +188,7 @@
     #retry-button {
       margin-top: 10px;
       padding: 10px;
-      background-color: var(--peach-primary);
+      background-color: #df9c7e;
       color: white;
       border: none;
       border-radius: 8px;
@@ -197,7 +197,7 @@
     }
     
     #retry-button:hover {
-      background-color: var(--peach-secondary);
+      background-color: #a0655a;
     }
     
     .fc-theme-standard .fc-scrollgrid {
@@ -207,13 +207,29 @@
     }
     
     .fc-col-header {
-      background-color: var(--peach-primary);
+      background-color: #df9c7e;
     }
     
     .fc-col-header-cell-cushion {
       color: white !important;
       font-weight: 500;
       padding: 8px 0;
+    }
+    
+    /* Style the calendar navigation buttons */
+    .fc-button {
+      background-color: #bc8176 !important;
+      border-color: #bc8176 !important;
+      color: white !important;
+    }
+    
+    .fc-button:hover {
+      background-color: #a0655a !important;
+      border-color: #a0655a !important;
+    }
+    
+    .fc-button:focus {
+      box-shadow: 0 0 0 2px var(--peach-light) !important;
     }
     
     .fc-daygrid-day.fc-day-today {
@@ -259,6 +275,10 @@
       white-space: nowrap;
       overflow: hidden;
     }
+    .fc-event.booked-event {
+    color: white !important;
+    }
+    
     
     .fc-event:hover {
       opacity: 0.8;
@@ -323,24 +343,39 @@
       .fc-event {
         font-size: 0.65rem !important;
         padding: 1px 2px !important;
-        min-height: 18px;
+        min-height: 10px;
         height: auto !important;
       }
       
       .fc-daygrid-day {
-        min-height: 35px !important;
+        min-height: 18px !important;
+        height: 18px !important;
       }
       
-      /* Hide "Booked" text on mobile only */
-      .fc-event {
-        font-size: 0 !important;
+      /* Make calendar fill available space without internal scrolling */
+      .calendar-section {
+        flex: 1;
       }
       
-      .fc-event::after {
-        content: '';
-        display: block;
-        width: 100%;
-        height: 100%;
+      #calendar {
+        flex: 1;
+        overflow: hidden;
+      }
+      
+      /* Reduce calendar header padding */
+      .fc-col-header-cell-cushion {
+        padding: 4px 0 !important;
+      }
+      
+      /* Reduce day number padding */
+      .fc-daygrid-day-number {
+        padding: 2px !important;
+        font-size: 0.7rem !important;
+      }
+      
+      /* Keep prices visible on mobile */
+      .fc-event[style*="--green-available"] {
+        font-size: 0.6rem !important;
       }
     }
     
@@ -367,13 +402,29 @@
       
       /* Very small mobile event styling */
       .fc-event {
-        font-size: 0 !important;
+        font-size: 0.6rem !important;
         padding: 1px !important;
-        min-height: 16px;
+        min-height: 8px;
       }
       
       .fc-daygrid-day {
-        min-height: 32px !important;
+        min-height: 16px !important;
+        height: 16px !important;
+      }
+      
+      /* Let calendar use available space */
+      .calendar-section {
+        flex: 1;
+      }
+      
+      #calendar {
+        flex: 1;
+        overflow: hidden;
+      }
+      
+      .fc-daygrid-day-number {
+        padding: 1px !important;
+        font-size: 0.65rem !important;
       }
     }
   </style>
@@ -726,9 +777,9 @@
           initialDate: todayStr,
           validRange: { start: '2025-03-01', end: oneYear },
           headerToolbar: {
-            left: 'prev,next today',
+            left: 'prev,next',
             center: 'title',
-            right: 'dayGridMonth'
+            right: 'today'
           },
           height: '100%',
           fixedWeekCount: false,
@@ -791,18 +842,18 @@
               
               if (date === todayStr) {
                 if (!isTodayAvailableForBooking() || isBooked) {
-                  eventTitle = 'Booked';
+                  eventTitle = ' ';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `$${rateData[date]?.price || 150}`;
+                  eventTitle = `${rateData[date]?.price || 150}`;
                   backgroundColor = 'var(--green-available)';
                 }
               } else if (date === tomorrowStr) {
                 if (isBooked) {
-                  eventTitle = 'Booked';
+                  eventTitle = ' ';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `$${rateData[date]?.price || 150}`;
+                  eventTitle = `${rateData[date]?.price || 150}`;
                   backgroundColor = 'var(--green-available)';
                 }
               } else if (d < today) {
@@ -811,10 +862,10 @@
                 textColor = '#777';
               } else {
                 if (isBooked) {
-                  eventTitle = 'Booked';
+                  eventTitle = ' ';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `$${rateData[date]?.price || 0}`;
+                  eventTitle = `${rateData[date]?.price || 0}`;
                   backgroundColor = 'var(--green-available)';
                 }
               }
