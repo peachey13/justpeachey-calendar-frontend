@@ -13,7 +13,7 @@
       --peach-secondary: #FF9559;
       --peach-dark: #E16B3F;
       --peach-text: #5D3A1E;
-      --green-available: #78B672; 
+      --green-available: #78B672;
       --green-accent: #78A27D;
       --cream-bg: #FFFAF0;
       --gray-light: #F0F0F0;
@@ -302,8 +302,8 @@
       }
       
       .title-section h1 {
-        font-size: 1.1rem; /* Reduced to fit on one line */
-        white-space: nowrap; /* Prevent wrapping */
+        font-size: 1.1rem;
+        white-space: nowrap;
       }
       
       .main-content {
@@ -388,8 +388,8 @@
       }
       
       .title-section h1 {
-        font-size: 0.95rem; /* Further reduced for smaller screens */
-        white-space: nowrap; /* Prevent wrapping */
+        font-size: 0.95rem;
+        white-space: nowrap;
       }
       
       .main-content {
@@ -926,7 +926,7 @@
                   eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `${rateData[date]?.price || 150}`;
+                  eventTitle = `$${rateData[date]?.price || 150}`; // Added $ prefix
                   backgroundColor = 'var(--green-available)';
                   textColor = '#fff';
                 }
@@ -935,7 +935,7 @@
                   eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `${rateData[date]?.price || 150}`;
+                  eventTitle = `$${rateData[date]?.price || 150}`; // Added $ prefix
                   backgroundColor = 'var(--green-available)';
                   textColor = '#fff';
                 }
@@ -948,7 +948,7 @@
                   eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `${rateData[date]?.price || 0}`;
+                  eventTitle = `$${rateData[date]?.price || 0}`; // Added $ prefix
                   backgroundColor = 'var(--green-available)';
                   textColor = '#fff';
                 }
