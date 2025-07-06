@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Just Peachey Rentals at The Lake - Availability Calendar</title>
+  <title>Just Peachey Rentals at The Lake</title>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -216,7 +216,6 @@
       padding: 8px 0;
     }
     
-    /* Style the calendar navigation buttons */
     .fc-button {
       background-color: #bc8176 !important;
       border-color: #bc8176 !important;
@@ -286,7 +285,6 @@
     }
     
     @media (max-width: 768px) {
-      /* Allow scrolling on mobile only */
       html, body {
         overflow: visible;
         height: auto;
@@ -300,11 +298,12 @@
       }
       
       .title-section {
-        padding: 5px 0 5px 0; /* Much smaller top margin on mobile */
+        padding: 5px 0 5px 0;
       }
       
       .title-section h1 {
-        font-size: 1.3rem; /* Smaller title on mobile */
+        font-size: 1.1rem; /* Reduced to fit on one line */
+        white-space: nowrap; /* Prevent wrapping */
       }
       
       .main-content {
@@ -335,35 +334,35 @@
         font-size: 0.8rem;
       }
       
-      /* Mobile-specific event styling */
       .fc-event {
         font-size: 0.65rem !important;
         padding: 1px 2px !important;
-        min-height: 10px;
-        height: auto !important;
+        min-height: 18px !important;
+        height: 18px !important;
+        line-height: 18px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100% !important;
+        box-sizing: border-box;
       }
-       .fc-event {
+      
+      .fc-event[style*="background-color: var(--red-booked)"] {
+        color: var(--red-booked) !important;
+        background-color: var(--red-booked) !important;
+      }
+      
+      .fc-event[style*="background-color: var(--green-available)"] {
         font-size: 0.65rem !important;
-        padding: 1px 2px !important;
-        min-height: 10px;
-        height: auto !important;
-        }
-
-.fc-event:has(span), .fc-event:has(div) {
-  line-height: 1 !important;
-}
-
-.fc-event.booked-event {
-  color: var(--red-booked) !important;
-}
-
+        background-color: var(--green-available) !important;
+        color: #fff !important;
+      }
       
       .fc-daygrid-day {
         min-height: 18px !important;
         height: 18px !important;
       }
       
-      /* Make calendar fill available space without internal scrolling */
       .calendar-section {
         flex: 1;
       }
@@ -373,34 +372,24 @@
         overflow: hidden;
       }
       
-      /* Reduce calendar header padding */
       .fc-col-header-cell-cushion {
         padding: 4px 0 !important;
       }
       
-      /* Reduce day number padding */
       .fc-daygrid-day-number {
         padding: 2px !important;
         font-size: 0.7rem !important;
-      }
-      
-      /* Hide only "Booked" text on mobile, keep prices visible */
-      .fc-event[style*="--red-booked"] {
-        font-size: 0 !important;
-      }
-      
-      .fc-event[style*="--green-available"] {
-        font-size: 0.6rem !important;
       }
     }
     
     @media (max-width: 480px) {
       .title-section {
-        padding: 3px 0 3px 0; /* Even smaller top margin on very small screens */
+        padding: 3px 0 3px 0;
       }
       
       .title-section h1 {
-        font-size: 1.1rem; /* Even smaller on very small screens */
+        font-size: 0.95rem; /* Further reduced for smaller screens */
+        white-space: nowrap; /* Prevent wrapping */
       }
       
       .main-content {
@@ -415,11 +404,28 @@
         padding: 12px;
       }
       
-      /* Very small mobile event styling */
       .fc-event {
         font-size: 0.6rem !important;
         padding: 1px !important;
-        min-height: 8px;
+        min-height: 16px !important;
+        height: 16px !important;
+        line-height: 16px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100% !important;
+        box-sizing: border-box;
+      }
+      
+      .fc-event[style*="background-color: var(--red-booked)"] {
+        color: var(--red-booked) !important;
+        background-color: var(--red-booked) !important;
+      }
+      
+      .fc-event[style*="background-color: var(--green-available)"] {
+        font-size: 0.6rem !important;
+        background-color: var(--green-available) !important;
+        color: #fff !important;
       }
       
       .fc-daygrid-day {
@@ -427,7 +433,6 @@
         height: 16px !important;
       }
       
-      /* Let calendar use available space */
       .calendar-section {
         flex: 1;
       }
@@ -446,12 +451,11 @@
 </head>
 <body>
   <div class="app-container">
-    <div class="title-section">
-      <h1>Just Peachey Rentals at The Lake Availability</h1>
-    </div>
-    
     <div class="main-content">
       <div class="calendar-section">
+        <div class="title-section">
+          <h1>Just Peachey Rentals at The Lake</h1>
+        </div>
         <div id="calendar" role="region" aria-label="Availability Calendar"></div>
         
         <div class="legend">
@@ -523,10 +527,66 @@
             }
           }
         });
+        console.log('Fetched rateData:', rateData);
+        console.log('Fetched bookedDates:', bookedDates);
         return true;
       } catch (error) {
         console.error('Error loading prices:', error);
         document.getElementById('total-price').innerHTML = 'Error loading prices. Please try again.';
+        document.getElementById('total-price').classList.remove('loading');
+        document.getElementById('retry-button').style.display = 'block';
+        document.getElementById('checkout-button').disabled = true;
+        return false;
+      }
+    }
+
+    async function fetchGoogleCalendar() {
+      try {
+        const googleCalUrl = 'https://calendar.google.com/calendar/ical/c_b8cb265e1434aab547bc1c252669ff3e53626b6f021588eefb9d183dfd807e2c%40group.calendar.google.com/private-e49b2af9a699886114899befbef8e2af/basic.ics';
+        const response = await fetch('https://justpeachey-calendar-sync.netlify.app/.netlify/functions/proxy-ical?url=' + encodeURIComponent(googleCalUrl));
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        
+        const icalText = await response.text();
+        const lines = icalText.split('\n');
+        let inEvent = false;
+        let eventStart = '';
+        let eventEnd = '';
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line === 'BEGIN:VEVENT') {
+            inEvent = true;
+            eventStart = '';
+            eventEnd = '';
+            continue;
+          }
+          if (line === 'END:VEVENT') {
+            inEvent = false;
+            if (eventStart && eventEnd) {
+              const start = parseICalDate(eventStart);
+              const end = parseICalDate(eventEnd);
+              if (start && end) {
+                let currentDate = new Date(start);
+                const endDate = new Date(end);
+                while (currentDate < endDate) {
+                  const dateStr = currentDate.toISOString().split('T')[0];
+                  bookedDates[dateStr] = true;
+                  currentDate.setDate(currentDate.getDate() + 1);
+                }
+              }
+            }
+            continue;
+          }
+          if (inEvent) {
+            if (line.startsWith('DTSTART')) eventStart = line.split(':')[1];
+            if (line.startsWith('DTEND')) eventEnd = line.split(':')[1];
+          }
+        }
+        console.log('Fetched Google Calendar bookedDates:', bookedDates);
+        return true;
+      } catch (error) {
+        console.error('Error fetching Google Calendar:', error);
+        document.getElementById('total-price').innerHTML = 'Error loading calendar data. Please try again.';
         document.getElementById('total-price').classList.remove('loading');
         document.getElementById('retry-button').style.display = 'block';
         document.getElementById('checkout-button').disabled = true;
@@ -576,6 +636,7 @@
             if (line.startsWith('DTEND')) eventEnd = line.split(':')[1];
           }
         }
+        console.log('Fetched Airbnb bookedDates:', bookedDates);
         return true;
       } catch (error) {
         console.error('Error fetching Airbnb calendar:', error);
@@ -675,7 +736,7 @@
         const now = new Date();
         const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
         const currentHour = estTime.getHours();
-        return currentHour < 21; // 9pm EST
+        return currentHour < 21;
       } catch (error) {
         console.error('Error checking today availability:', error);
         return false;
@@ -763,9 +824,9 @@
         document.getElementById('total-price').innerHTML = 'Loading calendar data...';
         document.getElementById('checkout-button').disabled = true;
         
-        const [pricesLoaded, airbnbDatesLoaded] = await Promise.all([fetchPrices(), fetchAirbnbCalendar()]);
+        const [pricesLoaded, airbnbDatesLoaded, googleDatesLoaded] = await Promise.all([fetchPrices(), fetchAirbnbCalendar(), fetchGoogleCalendar()]);
         
-        if (!pricesLoaded || !airbnbDatesLoaded) {
+        if (!pricesLoaded || !airbnbDatesLoaded || !googleDatesLoaded) {
           document.getElementById('total-price').innerHTML = 'Failed to load calendar data. Please try again.';
           document.getElementById('total-price').classList.remove('loading');
           document.getElementById('retry-button').style.display = 'block';
@@ -818,6 +879,7 @@
             try {
               calendar.getEvents().forEach(event => event.remove());
               const events = generateEvents();
+              console.log('Generated events:', events);
               calendar.addEventSource(events);
             } catch (error) {
               console.error('Error in datesSet:', error);
@@ -839,12 +901,16 @@
           try {
             const events = [];
             const allDates = new Set([...Object.keys(rateData), ...Object.keys(bookedDates)]);
+            const isMobile = window.matchMedia("(max-width: 768px)").matches;
             
             allDates.add(todayStr);
             allDates.add(tomorrowStr);
             
             allDates.forEach(date => {
-              if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+              if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+                console.warn(`Invalid date format: ${date}`);
+                return;
+              }
 
               const d = new Date(date);
               d.setHours(0, 0, 0, 0);
@@ -853,23 +919,25 @@
               
               let eventTitle = '';
               let backgroundColor = '';
-              let textColor = '#fff';
+              let textColor = isMobile && isBooked ? 'var(--red-booked)' : '#fff';
               
               if (date === todayStr) {
                 if (!isTodayAvailableForBooking() || isBooked) {
                   eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `$${rateData[date]?.price || 150}`;
+                  eventTitle = `${rateData[date]?.price || 150}`;
                   backgroundColor = 'var(--green-available)';
+                  textColor = '#fff';
                 }
               } else if (date === tomorrowStr) {
                 if (isBooked) {
                   eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `$${rateData[date]?.price || 150}`;
+                  eventTitle = `${rateData[date]?.price || 150}`;
                   backgroundColor = 'var(--green-available)';
+                  textColor = '#fff';
                 }
               } else if (d < today) {
                 eventTitle = '';
@@ -880,8 +948,9 @@
                   eventTitle = 'Booked';
                   backgroundColor = 'var(--red-booked)';
                 } else {
-                  eventTitle = `$${rateData[date]?.price || 0}`;
+                  eventTitle = `${rateData[date]?.price || 0}`;
                   backgroundColor = 'var(--green-available)';
+                  textColor = '#fff';
                 }
               }
               
@@ -902,12 +971,16 @@
           }
         }
 
-        calendar.addEventSource(generateEvents());
+        const events = generateEvents();
+        console.log('Initial events:', events);
+        calendar.addEventSource(events);
         calendar.render();
         
         setTimeout(() => {
           calendar.getEvents().forEach(event => event.remove());
-          calendar.addEventSource(generateEvents());
+          const updatedEvents = generateEvents();
+          console.log('Updated events after timeout:', updatedEvents);
+          calendar.addEventSource(updatedEvents);
           calendar.render();
         }, 100);
 
@@ -925,6 +998,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       try {
+        console.log('DOM content loaded, initializing calendar...');
         initializeCalendar();
         
         document.getElementById('checkout-button').addEventListener('click', function() {
@@ -937,7 +1011,6 @@
               throw new Error('Missing booking data');
             }
 
-            // Validate data format
             total = parseFloat(total);
             if (isNaN(total) || total <= 0) {
               throw new Error('Invalid total amount');
@@ -949,12 +1022,10 @@
 
             console.log('Redirecting with validated data:', { total, checkin, checkout });
 
-            // Store in localStorage as fallback
             localStorage.setItem('checkin', checkin);
             localStorage.setItem('checkout', checkout);
             localStorage.setItem('total', total.toString());
 
-            // Create URL with proper encoding
             const checkoutUrl = new URL('https://justpeacheyrentals.com/checkout');
             checkoutUrl.searchParams.set('booking_total', total.toString());
             checkoutUrl.searchParams.set('check_in', checkin);
@@ -962,7 +1033,6 @@
 
             console.log('Final URL:', checkoutUrl.toString());
 
-            // Redirect to the checkout page
             window.location.href = checkoutUrl.toString();
           } catch (error) {
             console.error('Error handling checkout:', error);
