@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmed - Just Peachey Rentals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --peach-light: #FFDFB8;
+      --peach-primary: #FFB17A;
+      --peach-secondary: #FF9559;
+      --peach-dark: #E16B3F;
+      --peach-text: #5D3A1E;
+      --green-success: #78B672;
+      --cream-bg: #FFFAF0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--cream-bg);
+      color: var(--peach-text);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .success-container {
+      max-width: 600px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      padding: 40px;
+      text-align: center;
+    }
+    
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--green-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+      color: white;
+    }
+    
+    .success-title {
+      color: var(--peach-dark);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .success-subtitle {
+      color: var(--peach-text);
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      opacity: 0.8;
+    }
+    
+    .booking-details {
+      background: var(--peach-light);
+      border-radius: 10px;
+      padding: 25px;
+      margin: 30px 0;
+      text-align: left;
+    }
+    
+    .booking-details h3 {
+      color: var(--peach-dark);
+      margin: 0 0 20px 0;
+      text-align: center;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(229, 107, 63, 0.2);
+    }
+    
+    .detail-row:last-child {
+      border-bottom: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      padding-top: 15px;
+      border-top: 2px solid var(--peach-primary);
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--peach-light);
+      border-radius: 50%;
+      border-top-color: var(--peach-dark);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .status-message {
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .status-success {
+      background: rgba(120, 182, 114, 0.1);
+      color: var(--green-success);
+      border-left: 4px solid var(--green-success);
+    }
+    
+    .status-error {
+      background: rgba(226, 92, 92, 0.1);
+      color: #E25C5C;
+      border-left: 4px solid #E25C5C;
+    }
+    
+    .home-button {
+      display: inline-block;
+      background: var(--peach-dark);
+      color: white;
+      text-decoration: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .home-button:hover {
+      background: var(--peach-secondary);
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .success-container {
+        padding: 20px;
+        margin: 10px;
+      }
+      
+      .success-title {
+        font-size: 1.5rem;
+      }
+      
+      .booking-details {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="success-container">
+    <div id="loading-state">
+      <div class="success-icon">
+        <span class="loading-spinner"></span>
+      </div>
+      <h1 class="success-title">Processing Your Booking...</h1>
+      <p class="success-subtitle">Please wait while we confirm your reservation.</p>
+    </div>
+    
+    <div id="success-state" class="hidden">
+      <div class="success-icon">✓</div>
+      <h1 class="success-title">Booking Confirmed!</h1>
+      <p class="success-subtitle">Thank you for choosing Just Peachey Rentals. Your reservation has been confirmed and your dates have been blocked.</p>
+      
+      <div class="booking-details">
+        <h3>Booking Details</h3>
+        <div class="detail-row">
+          <span>Confirmation Number:</span>
+          <span id="confirmation-number">-</span>
+        </div>
+        <div class="detail-row">
+          <span>Check-in:</span>
+          <span id="checkin-date">-</span>
+        </div>
+        <div class="detail-row">
+          <span>Check-out:</span>
+          <span id="checkout-date">-</span>
+        </div>
+        <div class="detail-row">
+          <span>Nights:</span>
+          <span id="nights-count">-</span>
+        </div>
+        <div class="detail-row">
+          <span>Total Paid:</span>
+          <span id="total-amount">-</span>
+        </div>
+      </div>
+      
+      <a href="/" class="home-button">Return to Home</a>
+    </div>
+    
+    <div id="error-state" class="hidden">
+      <div class="success-icon" style="background: #E25C5C;">✗</div>
+      <h1 class="success-title">Booking Error</h1>
+      <p class="success-subtitle">There was an issue processing your booking confirmation.</p>
+      
+      <div class="status-message status-error">
+        <strong>Error:</strong><br>
+        <span id="error-message">Unknown error occurred</span>
+      </div>
+      
+      <a href="/" class="home-button">Return to Home</a>
+    </div>
+  </div>
+
+  <script>
+    let contact_id = null;
+    
+    // Get contact ID from sessionStorage
+    function getContactId() {
+      try {
+        const sessionKeys = Object.keys(sessionStorage);
+        const submissionResponseKey = sessionKeys.find(key => key.startsWith('submissionResponse-'));
+        
+        if (submissionResponseKey) {
+          const submissionResponse = JSON.parse(sessionStorage.getItem(submissionResponseKey));
+          contact_id = submissionResponse.contactId;
+          console.log('Found contact ID:', contact_id);
+        }
+      } catch (error) {
+        console.error('Error getting contact ID from sessionStorage:', error);
+      }
+    }
+    
+    async function processBookingConfirmation() {
+      try {
+        // Get contact ID first
+        getContactId();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        
+        if (!sessionId) {
+          throw new Error('No session ID found in URL');
+        }
+        
+        console.log('Processing booking confirmation for session:', sessionId);
+        
+        const response = await fetch('https://justpeachey-calendar-sync.netlify.app/.netlify/functions/booking-success', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors',
+          credentials: 'omit',
+          body: JSON.stringify({
+            session_id: sessionId,
+            contact_id: contact_id
+          })
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Server response error:', errorText, 'Status:', response.status);
+          throw new Error(`Server error: ${response.status} - ${errorText}`);
+        }
+        
+        const result = await response.json();
+        console.log('Booking result:', result);
+        
+        if (result.success) {
+          showSuccessState(result.booking);
+          
+          // Update GHL contact with payment confirmation
+          if (contact_id) {
+            await updateGHLContact(result.booking);
+          }
+        } else {
+          throw new Error(result.error || 'Booking confirmation failed');
+        }
+      } catch (error) {
+        console.error('Booking confirmation error:', error.message, error.stack);
+        showErrorState(error.message);
+      }
+    }
+    
+    async function updateGHLContact(bookingData) {
+      try {
+        console.log('Updating GHL contact:', contact_id, 'with booking data:', bookingData);
+        
+        const response = await fetch('https://services.leadconnectorhq.com/hooks/3WpkSsJlnDicPQ3KKwCU/webhook-trigger/34e9acca-8135-4dd0-a73f-20991e7de234', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contact_id: contact_id,
+            payment_confirmed: true,
+            booking_id: bookingData.id,
+            checkin: bookingData.checkin,
+            checkout: bookingData.checkout,
+            total: bookingData.total,
+            stripe_session_id: bookingData.stripe_session_id,
+            stripe_email: bookingData.guestEmail
+          })
+        });
+        
+        if (response.ok) {
+          console.log('Successfully updated GHL contact');
+        } else {
+          console.error('Failed to update GHL contact:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error updating GHL contact:', error);
+      }
+    }
+    
+    function showSuccessState(booking) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('error-state').classList.add('hidden');
+      document.getElementById('success-state').classList.remove('hidden');
+      
+      document.getElementById('confirmation-number').textContent = booking.id || 'N/A';
+      document.getElementById('checkin-date').textContent = formatDate(booking.checkin);
+      document.getElementById('checkout-date').textContent = formatDate(booking.checkout);
+      document.getElementById('nights-count').textContent = calculateNights(booking.checkin, booking.checkout);
+      document.getElementById('total-amount').textContent = `$${(booking.total || 0).toFixed(2)}`;
+    }
+    
+    function showErrorState(errorMessage) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('success-state').classList.add('hidden');
+      document.getElementById('error-state').classList.remove('hidden');
+      
+      document.getElementById('error-message').textContent = errorMessage;
+    }
+    
+    function formatDate(dateStr) {
+      try {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
+        return date.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+      } catch (error) {
+        console.error('Error formatting date:', error, dateStr);
+        return dateStr;
+      }
+    }
+    
+    function calculateNights(checkin, checkout) {
+      try {
+        const start = new Date(checkin);
+        const end = new Date(checkout);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+      } catch (error) {
+        console.error('Error calculating nights:', error);
+        return 'N/A';
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Success page loaded');
+      processBookingConfirmation();
+    });
+  </script>
+</body>
+</html>
