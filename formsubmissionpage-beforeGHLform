@@ -1,0 +1,242 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Just Peachey Rentals - Complete Your Booking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --peach-light: #FFDFB8;
+      --peach-lighter: #FFF1E0;
+      --peach-primary: #FFB17A;
+      --peach-secondary: #FF9559;
+      --peach-dark: #E16B3F;
+      --peach-text: #5D3A1E;
+      --green-available: #78B672;
+      --cream-bg: #FFFAF0;
+      --gray-light: #F0F0F0;
+      --gray-medium: #D0D0D0;
+      --red-error: #E25C5C;
+    }
+    
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--cream-bg);
+  color: var(--peach-text);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.checkout-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1 {
+  color: var(--peach-dark);
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.card {
+  background-color: transparent;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+}
+
+.debug-info {
+  background-color: var(--peach-lighter);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  border: 1px solid var(--peach-light);
+  display: none;
+}
+
+.error-message {
+  background-color: rgba(226, 92, 92, 0.1);
+  color: var(--red-error);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--red-error);
+}
+
+.booking-details {
+  background-color: transparent;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid var(--peach-light);
+}
+
+.booking-details h3 {
+  color: var(--peach-dark);
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--peach-light);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 2px solid var(--peach-primary);
+}
+
+.detail-row.subtotal {
+  font-weight: normal;
+  font-size: 1rem;
+  margin-top: 0;
+  padding-top: 8px;
+  border-top: none;
+}
+
+.booking-summary {
+  background-color: transparent;
+  margin-top: 30px;
+  padding: 20px;
+}
+
+.booking-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid var(--gray-light);
+  font-weight: 500;
+}
+
+.booking-subtotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.booking-grand-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  margin-top: 10px;
+  border-top: 2px solid var(--peach-primary);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.fallback-section {
+  background-color: var(--peach-lighter);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid var(--peach-light);
+}
+
+.fallback-section h3 {
+  color: var(--peach-dark);
+  margin-top: 0;
+}
+
+.fallback-section p {
+  margin-bottom: 15px;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--peach-dark);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 10px 20px;
+  border: 2px solid var(--peach-dark);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.back-link:hover {
+  background-color: var(--peach-dark);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .checkout-wrapper {
+    padding: 15px;
+  }
+  
+  .card {
+    padding: 15px;
+  }
+
+  .debug-info {
+    font-size: 0.8rem;
+  }
+}  </style></head>
+<body>
+  <div class="checkout-wrapper">
+    <h1>Complete Your Booking</h1>
+    
+<!-- Debug Information (hidden from users) -->
+<div class="debug-info" id="debug-info">
+  <strong>Debug Information:</strong>
+
+  <span id="debug-content">Loading...</span>
+</div>
+
+<!-- Error Message -->
+<div class="error-message" id="error-message" style="display: none;">
+  <strong>Missing Booking Details</strong>
+
+  <span id="error-content"></span>
+</div>
+
+<!-- Booking Details Summary -->
+<div class="booking-details" id="booking-details" style="display: none;">
+  <h3>Your Booking Details</h3>
+  <div class="detail-row">
+    <span>Check-in:</span>
+    <span id="display-checkin">-</span>
+  </div>
+  <div class="detail-row">
+    <span>Check-out:</span>
+    <span id="display-checkout">-</span>
+  </div>
+  <div class="detail-row">
+    <span>Nights:</span>
+    <span id="display-nights">-</span>
+  </div>
+  <div class="detail-row subtotal">
+    <span>Accommodation:</span>
+    <span id="display-accommodation">$0</span>
+  </div>
+  <div class="detail-row subtotal">
+    <span>Cleaning fee:</span>
+    <span>$150</span>
+  </div>
+  <div class="detail-row">
+    <span>Total:</span>
+    <span id="display-total">$0</span>
+  </div>
+</div>
+
+    <!-- Fallback for missing data -->
+<div class="fallback-section" id="fallback-section" style="display: none;">
+  <h3>Booking Information Missing</h3>
+  <p>We couldn't find your booking details. This usually happens if you navigated directly to this page or if there was an issue with the booking process.</p>
+  <p>Please return to the calendar to select your dates and complete your booking.</p>
+  <a href="https://www.justpeacheyrentals.com/calendar-atthelake" class="back-link">← Back to Calendar</a>
+</div>  
+</div>
