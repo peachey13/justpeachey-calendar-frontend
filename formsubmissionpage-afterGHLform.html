@@ -1,0 +1,183 @@
+</div>
+  
+  <script>
+    let bookingData = {
+      total: 0,
+      checkin: null,
+      checkout: null,
+      nights: 0,
+      accommodation: 0,
+      formSubmitted: false,
+      booking_email: ''
+    };
+
+    function formatDate(dateStr) {
+      try {
+        const [year, month, day] = dateStr.split('-').map(num => parseInt(num, 10));
+        const date = new Date(year, month - 1, day);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        return dateStr;
+      }
+    }
+
+    function calculateNights(checkin, checkout) {
+      try {
+        const start = new Date(checkin);
+        const end = new Date(checkout);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+      } catch (error) {
+        console.error('Error calculating nights:', error);
+        return 0;
+      }
+    }
+
+    function loadBookingData() {
+      const params = new URLSearchParams(window.location.search);
+      let total = params.get('booking_total') || params.get('total');
+      let checkin = params.get('check_in') || params.get('checkin');
+      let checkout = params.get('check_out') || params.get('checkout');
+
+      if (!total || !checkin || !checkout) {
+        console.log('Trying localStorage fallback...');
+        total = total || localStorage.getItem('total');
+        checkin = checkin || localStorage.getItem('checkin');
+        checkout = checkout || localStorage.getItem('checkout');
+      }
+
+      if (total) {
+        bookingData.total = parseFloat(total);
+        bookingData.accommodation = bookingData.total - 150;
+      }
+      
+      if (checkin && /^\d{4}-\d{2}-\d{2}$/.test(checkin)) {
+        bookingData.checkin = checkin;
+      }
+      
+      if (checkout && /^\d{4}-\d{2}-\d{2}$/.test(checkout)) {
+        bookingData.checkout = checkout;
+      }
+
+      if (bookingData.checkin && bookingData.checkout) {
+        bookingData.nights = calculateNights(bookingData.checkin, bookingData.checkout);
+      }
+
+      const debugContent = `
+        URL Parameters: ${window.location.search}<br>
+        Total: ${total} → ${bookingData.total}<br>
+        Check-in: ${checkin} → ${bookingData.checkin}<br>
+        Check-out: ${checkout} → ${bookingData.checkout}<br>
+        Nights: ${bookingData.nights}<br>
+        Accommodation: ${bookingData.accommodation}<br>
+        localStorage: total=${localStorage.getItem('total')}, checkin=${localStorage.getItem('checkin')}, checkout=${localStorage.getItem('checkout')}
+      `;
+      document.getElementById('debug-content').innerHTML = debugContent;
+
+      return bookingData.total > 0 && bookingData.checkin && bookingData.checkout;
+    }
+
+    function updateUI() {
+      const hasValidData = bookingData.total > 0 && bookingData.checkin && bookingData.checkout;
+      
+      if (hasValidData) {
+        document.getElementById('display-checkin').textContent = formatDate(bookingData.checkin);
+        document.getElementById('display-checkout').textContent = formatDate(bookingData.checkout);
+        document.getElementById('display-nights').textContent = bookingData.nights;
+        document.getElementById('display-accommodation').textContent = `$${bookingData.accommodation}`;
+        document.getElementById('display-total').textContent = `$${bookingData.total}`;
+        
+        document.getElementById('booking-details').style.display = 'block';
+        document.getElementById('form-card').style.display = 'block';
+        document.getElementById('fallback-section').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+      } else {
+        const missingItems = [];
+        if (bookingData.total <= 0) missingItems.push('total amount');
+        if (!bookingData.checkin) missingItems.push('check-in date');
+        if (!bookingData.checkout) missingItems.push('check-out date');
+        
+        document.getElementById('error-content').textContent = `Missing: ${missingItems.join(', ')}`;
+        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('fallback-section').style.display = 'block';
+        document.getElementById('booking-details').style.display = 'none';
+        document.getElementById('form-card').style.display = 'none';
+      }
+    }
+
+    function handleFormSubmission() {
+      console.log('Form submitted, capturing data...');
+      // Placeholder: GHL form submission updates contact; fetch email via GHL API or event
+      // For now, assume email is accessible (e.g., via custom GHL event or API call)
+      bookingData.booking_email = 'placeholder@example.com'; // Replace with actual email retrieval
+
+      const checkoutData = {
+        total: bookingData.total,
+        checkin: bookingData.checkin,
+        checkout: bookingData.checkout,
+        booking_email: bookingData.booking_email
+      };
+
+      fetch('https://justpeachey-calendar-sync.netlify.app/.netlify/functions/stripe-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(checkoutData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.url) {
+          window.location.href = data.url;
+        } else {
+          console.error('Stripe checkout failed:', data.error);
+          alert('Failed to initiate payment. Please try again.');
+        }
+      })
+      .catch(error => console.error('Error initiating checkout:', error));
+    }
+
+    function setupFormMonitoring() {
+      // Listen for GHL form submission event (custom event or GHL integration)
+      document.addEventListener('ghlFormSubmitted', function(e) {
+        console.log('GHL form submitted event:', e.detail);
+        bookingData.booking_email = e.detail.email || 'placeholder@example.com';
+        handleFormSubmission();
+      });
+      console.log('Form monitoring active, waiting for GHL event');
+    }
+
+    // Store contact email when form is submitted
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wait a bit for the form to be rendered by GHL
+      setTimeout(function() {
+        const form = document.querySelector('form');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            const emailField = document.querySelector('[name="email"]');
+            if (emailField) {
+              const email = emailField.value;
+              localStorage.setItem('contact_email', email);
+              console.log('Stored email in localStorage:', email);
+            }
+          });
+        }
+      }, 1000);
+    });
+
+    function initializePage() {
+      console.log('Initializing checkout page...');
+      const hasValidData = loadBookingData();
+      updateUI();
+      if (hasValidData) {
+        setupFormMonitoring();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initializePage);
+    window.bookingData = bookingData;
+    window.loadBookingData = loadBookingData;
+  </script>
+</body>
+</html>
